@@ -140,11 +140,11 @@ func (r *runner) spawnWorkers(spawnCount int, quit chan bool, spawnCompleteFunc 
 						if r.rateLimitEnabled {
 							blocked := r.rateLimiter.Acquire()
 							if !blocked {
-								task := r.getTask()
+								task := r.getTask2(i)
 								r.safeRun(task.Fn)
 							}
 						} else {
-							task := r.getTask()
+							task := r.getTask2(i)
 							r.safeRun(task.Fn)
 						}
 					}
@@ -157,6 +157,20 @@ func (r *runner) spawnWorkers(spawnCount int, quit chan bool, spawnCompleteFunc 
 		spawnCompleteFunc()
 	}
 }
+
+// new task mode for ka test
+func (r *runner) getTask2(index int) *Task {
+	tasksSlice := r.tasks
+	if index < len(tasksSlice){
+		return tasksSlice[index]
+	}else{
+		if len(tasksSlice)!=0{
+			return tasksSlice[0]
+		}
+	}
+	return nil
+}
+
 
 // setTasks will set the runner's task list AND the total task weight
 // which is used to get a random task later
